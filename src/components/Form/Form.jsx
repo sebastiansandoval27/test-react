@@ -20,6 +20,8 @@ const Form = ({ changePage }) => {
     phone: yup
       .number()
       .required(messages.required)
+      .positive(messages.numberInValid)
+      .min(10000, messages.numberInValid)
       .typeError(messages.numberInValid),
   });
 
