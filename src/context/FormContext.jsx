@@ -3,10 +3,10 @@ import React, { createContext, useState } from "react";
 export const AplicationContext = createContext(null);
 
 export const dataValue = {
-  name: "",
-  address: "",
-  nit: "",
-  phone: "",
+  name: "Company",
+  address: "Dir1",
+  nit: "Nit1",
+  phone: "314564548",
 };
 
 export const FormContext = ({ children }) => {

@@ -1,16 +1,16 @@
 import styled from "styled-components";
 
-export const HeaderComp = styled.header`
+export const FooterComp = styled.header`
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 15px 10px;
   width: 100%;
-  height: 35px;
+  height: 50px;
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
-  background-color: #00a8ff;
+  background-color: #23648e;
   color: white;
   font-size: 20px;
   font-weight: bold;

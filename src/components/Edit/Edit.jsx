@@ -1,17 +1,15 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { messages, notify } from "../../utils/messages";
+import { messages } from "../../utils/messages";
 import { useForm } from "react-hook-form";
-import { Button, Error, FormComp, FormField } from "./form.style";
+import { Button, ButtonDelete, Error, FormComp, FormField } from "./form.style";
 import { AplicationContext } from "../../context/FormContext";
-import { postUser } from "../../services/formService";
+import { getUser, putUser, deleteUser } from "../../services/formService";
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-const Form = ({ changePage }) => {
-  const { setData: setDataContext } = useContext(AplicationContext);
+const Edit = ({ changePage }) => {
+  const { data: dataContext, setData: setDataContext } =
+    useContext(AplicationContext);
 
   const schema = yup.object().shape({
     name: yup.string().required(messages.required),
@@ -28,29 +26,51 @@ const Form = ({ changePage }) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm({
     resolver: yupResolver(schema),
   });
 
   const onSubmit = (data) => {
     setDataContext(data);
-    reset();
-    postUser(data)
-      .then((data) => {
-        notify("success", "Usuario creado");
-        setTimeout(() => {
-          changePage();
-        }, 3000);
+    putUser(data)
+      .then((res) => {
+        console.log(res);
+        setDataContext(res);
       })
       .catch((err) => {
         console.log(err);
-        notify("error", "Error al crear usuario");
       });
+    reset();
+    changePage();
   };
+
+  const onDelete = (id) => {
+    deleteUser(id);
+    reset();
+    changePage();
+  };
+
+  useEffect(() => {
+    getUser(dataContext.id)
+      .then((data) => {
+        console.log(data);
+        setDataContext(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [dataContext, setDataContext]);
+
+  useEffect(() => {
+    setValue("name", dataContext.name);
+    setValue("address", dataContext.address);
+    setValue("nit", dataContext.nit);
+    setValue("phone", dataContext.phone);
+  }, [dataContext, setValue]);
 
   return (
     <FormComp>
-      <ToastContainer />
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormField>
           <input {...register("name")} placeholder="name" type="text" />
@@ -69,11 +89,14 @@ const Form = ({ changePage }) => {
           {errors.phone?.message && <Error>{errors.phone?.message}</Error>}
         </FormField>
         <FormField>
-          <Button type="submit">Agregar Usuario</Button>
+          <Button type="submit">Editar Usuario</Button>
+          <ButtonDelete onClick={() => onDelete(dataContext.id)} type="button">
+            Eliminar
+          </ButtonDelete>
         </FormField>
       </form>
     </FormComp>
   );
 };
 
-export default Form;
+export default Edit;
